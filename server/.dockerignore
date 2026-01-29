@@ -1,0 +1,45 @@
+# Git files
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+data/
+
+# Test files
+*_test.go
+test_helpers.go
+
+# Documentation
+*.md
+README.md
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+server
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+tmp/
+temp/
+*.tmp
