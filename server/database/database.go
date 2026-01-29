@@ -22,14 +22,21 @@ func Init() (*gorm.DB, error) {
 			return nil, fmt.Errorf("failed to connect to SQLite database: %w", err)
 		}
 	case "postgres":
-		dsn := fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
-			config.AppConfig.DatabaseHost,
-			config.AppConfig.DatabaseUser,
-			config.AppConfig.DatabasePassword,
-			config.AppConfig.DatabaseName,
-			config.AppConfig.DatabasePort,
-		)
+		var dsn string
+		// Prefer DATABASE_URL if provided
+		if config.AppConfig.DatabaseURL != "" {
+			dsn = config.AppConfig.DatabaseURL
+		} else {
+			// Fallback to individual params
+			dsn = fmt.Sprintf(
+				"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
+				config.AppConfig.DatabaseHost,
+				config.AppConfig.DatabaseUser,
+				config.AppConfig.DatabasePassword,
+				config.AppConfig.DatabaseName,
+				config.AppConfig.DatabasePort,
+			)
+		}
 		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
 			return nil, fmt.Errorf("failed to connect to PostgreSQL database: %w", err)

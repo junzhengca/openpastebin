@@ -13,7 +13,9 @@ type Config struct {
 	DatabaseType string
 	// SQLite config
 	DatabasePath string
-	// PostgreSQL config
+	// PostgreSQL config - prefer DATABASE_URL over individual params
+	DatabaseURL string
+	// Legacy PostgreSQL config (fallback if DATABASE_URL not set)
 	DatabaseHost     string
 	DatabasePort     string
 	DatabaseUser     string
@@ -33,7 +35,9 @@ func Load() error {
 		DatabaseType: getEnv("DATABASE_TYPE", "sqlite"),
 		// SQLite
 		DatabasePath: getEnv("DATABASE_PATH", "./data.db"),
-		// PostgreSQL
+		// PostgreSQL - prefer DATABASE_URL
+		DatabaseURL: getEnv("DATABASE_URL", ""),
+		// Legacy PostgreSQL config (fallback)
 		DatabaseHost:     getEnv("DATABASE_HOST", "localhost"),
 		DatabasePort:     getEnv("DATABASE_PORT", "5432"),
 		DatabaseUser:     getEnv("DATABASE_USER", "postgres"),
@@ -43,8 +47,11 @@ func Load() error {
 
 	// Validate PostgreSQL config if using postgres
 	if AppConfig.DatabaseType == "postgres" {
-		if AppConfig.DatabasePassword == "" {
-			return fmt.Errorf("DATABASE_PASSWORD is required when using PostgreSQL")
+		if AppConfig.DatabaseURL == "" {
+			// Fallback to individual params if DATABASE_URL not set
+			if AppConfig.DatabasePassword == "" {
+				return fmt.Errorf("either DATABASE_URL or DATABASE_PASSWORD is required when using PostgreSQL")
+			}
 		}
 	}
 
