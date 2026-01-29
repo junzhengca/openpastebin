@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"openpastebin/server/config"
 	"openpastebin/server/database"
 	"openpastebin/server/handlers"
+	"openpastebin/server/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,6 +42,12 @@ func main() {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 
+	// Auto-migrate models
+	if err := database.DB.AutoMigrate(&models.Paste{}); err != nil {
+		log.Fatalf("Failed to auto-migrate models: %v", err)
+	}
+	log.Println("Database models migrated successfully")
+
 	// Setup router
 	router := gin.Default()
 
@@ -49,6 +55,17 @@ func main() {
 	api := router.Group("/api")
 	{
 		api.GET("/hello", handlers.HelloWorld)
+
+		// Paste handlers
+		createPasteHandler := handlers.NewCreatePasteHandler()
+		getPasteHandler := handlers.NewGetPasteHandler()
+		updatePasteHandler := handlers.NewUpdatePasteHandler()
+		deletePasteHandler := handlers.NewDeletePasteHandler()
+
+		api.POST(createPasteHandler.Path(), createPasteHandler.Handle)
+		api.GET(getPasteHandler.Path(), getPasteHandler.Handle)
+		api.PUT(updatePasteHandler.Path(), updatePasteHandler.Handle)
+		api.DELETE(deletePasteHandler.Path(), deletePasteHandler.Handle)
 	}
 
 	// Create HTTP server
