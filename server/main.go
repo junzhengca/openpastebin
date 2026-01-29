@@ -14,6 +14,7 @@ import (
 	"openpastebin/server/handlers"
 	"openpastebin/server/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -50,6 +51,13 @@ func main() {
 
 	// Setup router
 	router := gin.Default()
+
+	// Configure CORS middleware
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"}
+	router.Use(cors.New(corsConfig))
 
 	// Register routes
 	api := router.Group("/api")

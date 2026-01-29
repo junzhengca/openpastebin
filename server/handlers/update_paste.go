@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"openpastebin/server/database"
@@ -19,7 +18,7 @@ type UpdatePasteRequest struct {
 }
 
 type UpdatePasteResponse struct {
-	ID        uint   `json:"id"`
+	ID        string `json:"id"`
 	Content   string `json:"content"`
 	ExpiresAt *string `json:"expires_at"` // ISO 8601 format or null
 	UpdatedAt string `json:"updated_at"` // ISO 8601 format
@@ -51,7 +50,7 @@ func (h *UpdatePasteHandler) ExampleBody() interface{} {
 func (h *UpdatePasteHandler) ExampleResponse() interface{} {
 	expiresAt := "2026-01-30T12:00:00Z"
 	return UpdatePasteResponse{
-		ID:        1,
+		ID:        "aBcDeF",
 		Content:   "Updated content",
 		ExpiresAt: &expiresAt,
 		UpdatedAt: "2026-01-29T11:00:00Z",
@@ -60,8 +59,7 @@ func (h *UpdatePasteHandler) ExampleResponse() interface{} {
 
 func (h *UpdatePasteHandler) Handle(c *gin.Context) {
 	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	if len(idStr) != 6 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid paste ID"})
 		return
 	}
@@ -74,7 +72,7 @@ func (h *UpdatePasteHandler) Handle(c *gin.Context) {
 
 	// Find paste
 	var paste models.Paste
-	if err := database.DB.First(&paste, uint(id)).Error; err != nil {
+	if err := database.DB.Where("id = ?", idStr).First(&paste).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Paste not found"})
 		return
 	}

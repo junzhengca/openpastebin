@@ -7,7 +7,7 @@ import (
 )
 
 type Paste struct {
-	ID          uint           `json:"id" gorm:"primaryKey"`
+	ID          string         `json:"id" gorm:"primaryKey;type:varchar(6);not null;uniqueIndex"`
 	Content     string         `json:"content" gorm:"type:text;not null"`
 	SecretToken string         `json:"secret_token" gorm:"type:varchar(32);not null;uniqueIndex"`
 	ExpiresAt   *time.Time     `json:"expires_at" gorm:"index"`

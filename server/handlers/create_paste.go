@@ -18,7 +18,7 @@ type CreatePasteRequest struct {
 }
 
 type CreatePasteResponse struct {
-	ID          uint       `json:"id"`
+	ID          string     `json:"id"`
 	Content     string     `json:"content"`
 	SecretToken string     `json:"secret_token"`
 	ExpiresAt   *time.Time `json:"expires_at"`
@@ -51,7 +51,7 @@ func (h *CreatePasteHandler) ExampleBody() interface{} {
 func (h *CreatePasteHandler) ExampleResponse() interface{} {
 	expiresAt := time.Date(2026, 1, 30, 12, 0, 0, 0, time.UTC)
 	return CreatePasteResponse{
-		ID:          1,
+		ID:          "aBcDeF",
 		Content:     "Hello, World!",
 		SecretToken: "abc123def456ghi789jkl012mno345pq",
 		ExpiresAt:   &expiresAt,
@@ -63,6 +63,13 @@ func (h *CreatePasteHandler) Handle(c *gin.Context) {
 	var req CreatePasteRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "details": err.Error()})
+		return
+	}
+
+	// Generate paste ID
+	pasteID, err := generatePasteID()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate paste ID"})
 		return
 	}
 
@@ -92,6 +99,7 @@ func (h *CreatePasteHandler) Handle(c *gin.Context) {
 
 	// Create paste
 	paste := models.Paste{
+		ID:          pasteID,
 		Content:     req.Content,
 		SecretToken: secretToken,
 		ExpiresAt:   expiresAt,

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"openpastebin/server/database"
 	"openpastebin/server/models"
@@ -50,8 +49,7 @@ func (h *DeletePasteHandler) ExampleResponse() interface{} {
 
 func (h *DeletePasteHandler) Handle(c *gin.Context) {
 	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	if len(idStr) != 6 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid paste ID"})
 		return
 	}
@@ -64,7 +62,7 @@ func (h *DeletePasteHandler) Handle(c *gin.Context) {
 
 	// Find paste
 	var paste models.Paste
-	if err := database.DB.First(&paste, uint(id)).Error; err != nil {
+	if err := database.DB.Where("id = ?", idStr).First(&paste).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Paste not found"})
 		return
 	}

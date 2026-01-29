@@ -1,0 +1,78 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+/dist/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.txt
+coverage.html
+coverage.xml
+
+# Dependency directories
+vendor/
+
+# Go module cache (optional, but recommended)
+# Uncomment if you want to ignore the module cache
+# /go/pkg/mod/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data.db
+*.db-shm
+*.db-wal
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Air (live reload tool for Go)
+tmp/
+
+# Build artifacts
+*.a
+*.o
